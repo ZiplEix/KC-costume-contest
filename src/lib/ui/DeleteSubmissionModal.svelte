@@ -1,8 +1,7 @@
 <script lang='ts'>
     export let modalId: string;
-    export let submissionId: string;
 
-    export let onDelete: (id: string) => void;
+    export let onDelete: () => void;
 </script>
 
 <dialog id="{modalId}" class="modal">
@@ -12,7 +11,7 @@
         <div class="modal-action">
             <form method="dialog">
                 <button class="btn">Cancel</button>
-                <button class="btn bg-amber-500 text-black" on:click={() => onDelete(submissionId)}>Delete</button>
+                <button class="btn bg-amber-500 text-black" on:click={() => onDelete()}>Delete</button>
             </form>
         </div>
     </div>

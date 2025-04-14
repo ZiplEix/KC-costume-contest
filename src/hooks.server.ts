@@ -11,7 +11,5 @@ export const handle: Handle = async ({ event, resolve }) => {
 		});
 	}
 
-	return resolve(event, {
-		maxBodySize: 10_000_000, // 10MB
-	});
+	return resolve(event);
 };

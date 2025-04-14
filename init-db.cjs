@@ -14,13 +14,30 @@ const db = new sqlite3.Database(dbPath, (err) => {
 const createSubmissionTableQuery = `
   CREATE TABLE IF NOT EXISTS submission (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    userid TEXT NOT NULL UNIQUE,
     name TEXT NOT NULL,
-    imageurl TEXT NOT NULL,
-    votecount INTEGER DEFAULT 0
+    imageurl TEXT NOT NULL
+  );
+`
+
+const createVoteTableQuery = `
+  CREATE TABLE IF NOT EXISTS vote (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    submissionid INTEGER NOT NULL,
+    userid TEXT NOT NULL,
+    FOREIGN KEY (submissionid) REFERENCES submission(id)
   );
 `
 
 db.run(createSubmissionTableQuery, function (err) {
+    if (err) {
+        console.error('Error creating table: ' + err.message);
+    } else {
+        console.log('Table created or already exists.');
+    }
+});
+
+db.run(createVoteTableQuery, function (err) {
     if (err) {
         console.error('Error creating table: ' + err.message);
     } else {

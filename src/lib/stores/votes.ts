@@ -1,19 +1,33 @@
-import { writable } from "svelte/store";
+import axios from "axios";
+import { get, writable } from "svelte/store";
 
-function getInitialVotes(): string[] {
-    if (typeof localStorage !== "undefined") {
-        return localStorage.getItem("votes")?.split(":") || ["0", "0"];
-    }
+export async function initVotes(deviceId: string): Promise<void> {
+    try {
+        const response = await axios.get(`/api/vote`, {
+            headers: {
+                'X-Device-ID': deviceId
+            }
+        })
 
-    return ["0", "0"];
+        if (Array.isArray(response.data)) {
+            let newVotes = response.data.map((vote: string) => vote.toString());
+            votesStore.set(newVotes);
+        }
+
+        if (get(votesStore).length === 0) {
+            votesStore.set(["0", "0"]);
+        } else if (get(votesStore).length < 2) {
+            const currentVotes = get(votesStore);
+            const newVotes = [...currentVotes, "0"];
+            votesStore.set(newVotes);
+        }
+    } catch (error) {}
 }
 
-const votesStore = writable<string[]>(getInitialVotes());
+const votesStore = writable<string[]>(["0", "0"]);
 
 votesStore.subscribe((value) => {
-    if (typeof localStorage !== "undefined") {
-        localStorage.setItem("votes", value.join(":"));
-    }
+    // update in db
 })
 
 export { votesStore };

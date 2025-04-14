@@ -47,11 +47,11 @@ export class Database {
         }
     }
 
-    public static async registerSubmission(name: string, imageUrl: string): Promise<number> {
-        const query = `INSERT INTO submission (name, imageurl) VALUES (?, ?)`;
+    public static async registerSubmission(name: string, imageUrl: string, userid: string): Promise<number> {
+        const query = `INSERT INTO submission (name, imageurl, userid) VALUES (?, ?, ?)`;
 
         try {
-            const insertedId = await this.run(query, [name, imageUrl]);
+            const insertedId = await this.run(query, [name, imageUrl, userid]);
             return insertedId;
         } catch (error) {
             console.error("Error registering submission:", error);
@@ -60,10 +60,20 @@ export class Database {
     }
 
     public static async getAllSubmissions(): Promise<any[]> {
-        const query = `SELECT * FROM submission`;
+        const query = `
+            SELECT
+                s.id,
+                s.name,
+                s.imageurl,
+                COUNT(v.id) as voteCount
+            FROM submission s
+            LEFT JOIN vote v ON v.submissionid = s.id
+            GROUP BY s.id
+        `;
 
         try {
-            return await this.query(query);
+            const res = await this.query(query);
+            return res
         } catch (error) {
             console.error("Error fetching submissions:", error);
             throw error;
@@ -82,7 +92,19 @@ export class Database {
         }
     }
 
-    public static async deleteSubmission(id: string): Promise<void> {
+    public static async getSubmissionByUserId(userid: string): Promise<any> {
+        const query = `SELECT * FROM submission WHERE userid = ?`;
+
+        try {
+            const rows = await this.query(query, [userid]);
+            return rows[0];
+        } catch (error) {
+            console.error("Error fetching submission by User ID:", error);
+            throw error;
+        }
+    }
+
+    public static async deleteSubmissionById(id: string): Promise<void> {
         const query = `DELETE FROM submission WHERE id = ?`;
 
         try {
@@ -93,22 +115,74 @@ export class Database {
         }
     }
 
-    public static async registerVote(submissionId: number, type: "vote" | "unvote"): Promise<void> {
-        const increment = type === "vote" ? 1 : -1;
-
-        const query = `
-            UPDATE submission
-            SET votecount = MAX(0, votecount + ?)
-            WHERE id = ?
-        `;
+    public static async deleteSubmissionByUserId(userid: string): Promise<void> {
+        const query = `DELETE FROM submission WHERE userid = ?`;
 
         try {
-            await this.query(query, [increment, submissionId]);
+            await this.run(query, [userid]);
         } catch (error) {
-            console.error(`Error registering ${type} for submission ${submissionId}:`, error);
+            console.error("Error deleting submission by User ID:", error);
             throw error;
         }
     }
+
+    public static async getVotesByDeviceId(deviceId: string): Promise<any[]> {
+        const query = `SELECT * FROM vote WHERE userid = ?`;
+
+        try {
+            return await this.query(query, [deviceId]);
+        } catch (error) {
+            console.error("Error fetching votes by Device ID:", error);
+            throw error;
+        }
+    }
+
+    public static async registerVote(submissionId: number, type: "vote" | "unvote", userId: string): Promise<void> {
+        if (type === "vote") {
+            // Vérifie le nombre de votes existants pour cet utilisateur
+            const existingVotes = await this.query(
+                `SELECT COUNT(*) as count FROM vote WHERE userid = ?`,
+                [userId]
+            );
+            console.log("Existing votes:", existingVotes);
+
+            if (existingVotes[0].count >= 2) {
+                throw new Error("User has already voted for 2 submissions.");
+            }
+
+            // Vérifie s’il n’a pas déjà voté pour cette submission
+            const alreadyVoted = await this.query(
+                `SELECT 1 FROM vote WHERE userid = ? AND submissionid = ?`,
+                [userId, submissionId]
+            );
+            console.log("Already voted:", alreadyVoted);
+
+            if (alreadyVoted.length > 0) {
+                throw new Error("User has already voted for this submission.");
+            }
+
+            // Ajoute le vote
+            // await this.db.run(
+            //     `INSERT INTO vote (submissionid, userid) VALUES (?, ?)`,
+            //     [submissionId, userId]
+            // );
+            await this.run(
+                `INSERT INTO vote (submissionid, userid) VALUES (?, ?)`,
+                [submissionId, userId]
+            ).catch((error) => {
+                console.error("Error inserting vote:", error);
+                throw error;
+            });
+
+        } else if (type === "unvote") {
+            // Supprime le vote
+            await this.db.run(
+                `DELETE FROM vote WHERE submissionid = ? AND userid = ?`,
+                [submissionId, userId]
+            );
+        }
+    }
+
 }
 
 Database.init()

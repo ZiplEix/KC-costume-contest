@@ -5,6 +5,7 @@ export type Submission = {
     name: string;
     imageUrl: string;
     voteCount: number;
+    userid: string;
 }
 
 export const submissionsStore = writable<Submission[]>([]);
