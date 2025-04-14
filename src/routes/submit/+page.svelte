@@ -86,7 +86,30 @@
         }
     }
 
-    async function compressImage(file: File, maxHeight = 1080, quality = 0.8): Promise<File> {
+    async function compressImage(
+        file: File,
+        maxHeight = 1080,
+        initialQuality = 0.8,
+        maxSize = 524288, // 512 KB
+        minQuality = 0.4,
+        qualityStep = 0.1
+    ): Promise<File> {
+        let quality = initialQuality;
+
+        while (quality >= minQuality) {
+            const compressedFile = await compressOnce(file, maxHeight, quality);
+            if (compressedFile.size <= maxSize) {
+                return compressedFile;
+            }
+
+            quality -= qualityStep;
+        }
+
+        // Dernière tentative avec qualité minimale
+        return await compressOnce(file, maxHeight, minQuality);
+    }
+
+    function compressOnce(file: File, maxHeight: number, quality: number): Promise<File> {
         return new Promise((resolve, reject) => {
             const img = new Image();
             const reader = new FileReader();
@@ -122,8 +145,10 @@
 
             reader.onerror = reject;
             reader.readAsDataURL(file);
-        });
-    }
+        }
+    );
+}
+
 
 
 </script>
