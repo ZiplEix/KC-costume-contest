@@ -90,32 +90,33 @@
         }
     }
 
-    async function compressImage(file: File, maxWidth = 1080, quality = 0.8): Promise<File> {
+    async function compressImage(file: File, maxHeight = 1080, quality = 0.8): Promise<File> {
         return new Promise((resolve, reject) => {
             const img = new Image();
             const reader = new FileReader();
 
             reader.onload = (e) => {
                 if (!e.target?.result) return reject("Failed to read image");
-
                 img.src = e.target.result as string;
             };
 
             img.onload = () => {
                 const canvas = document.createElement("canvas");
-                const scaleFactor = maxWidth / img.width;
-                canvas.width = maxWidth;
-                canvas.height = img.height * scaleFactor;
+
+                const scaleFactor = maxHeight / img.height;
+                canvas.height = maxHeight;
+                canvas.width = img.width * scaleFactor;
 
                 const ctx = canvas.getContext("2d");
                 if (!ctx) return reject("Canvas context error");
+
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
                 canvas.toBlob((blob) => {
                     if (!blob) return reject("Compression failed");
 
                     const compressedFile = new File([blob], file.name, {
-                        type: "image/jpeg", // ou "image/webp"
+                        type: "image/jpeg",
                         lastModified: Date.now(),
                     });
 
@@ -127,6 +128,7 @@
             reader.readAsDataURL(file);
         });
     }
+
 
 </script>
 
