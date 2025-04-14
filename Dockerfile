@@ -17,6 +17,6 @@ COPY init-db.cjs /app/init-db.cjs
 RUN npm install sqlite3 --production
 EXPOSE 3000
 ENV NODE_ENV=production
-ENV ORIGIN=http://localhost:3000
+# ENV ORIGIN=http://localhost:3000
 
 CMD ["sh", "-c", "node /app/init-db.cjs && node build"]
