@@ -89,6 +89,45 @@
             alert("There was an error deleting your submission. Please try again.");
         }
     }
+
+    async function compressImage(file: File, maxWidth = 1080, quality = 0.8): Promise<File> {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                if (!e.target?.result) return reject("Failed to read image");
+
+                img.src = e.target.result as string;
+            };
+
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                const scaleFactor = maxWidth / img.width;
+                canvas.width = maxWidth;
+                canvas.height = img.height * scaleFactor;
+
+                const ctx = canvas.getContext("2d");
+                if (!ctx) return reject("Canvas context error");
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                canvas.toBlob((blob) => {
+                    if (!blob) return reject("Compression failed");
+
+                    const compressedFile = new File([blob], file.name, {
+                        type: "image/jpeg", // ou "image/webp"
+                        lastModified: Date.now(),
+                    });
+
+                    resolve(compressedFile);
+                }, "image/jpeg", quality);
+            };
+
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
 </script>
 
 <main class="p-4">
@@ -138,9 +177,21 @@
                     accept="image/*"
                     class="file-input w-full"
                     required
-                    on:change={(e) => {
+                    on:change={async (e) => {
                         const files = (e.target as HTMLInputElement).files;
-                        photo = files && files.length > 0 ? files[0] : null;
+                        // photo = files && files.length > 0 ? files[0] : null;
+                        if (files && files.length > 0) {
+                            const original = files[0];
+
+                            try {
+                                photo = await compressImage(original, 1080, 0.8);
+                            } catch (error) {
+                                console.error("Error compressing image:", error);
+                                alert("There was an error compressing your image. Please try again.");
+                            }
+                        } else {
+                            photo = null;
+                        }
                     }}
                 />
             </fieldset>
