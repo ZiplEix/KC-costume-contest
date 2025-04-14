@@ -28,8 +28,9 @@ export const POST: RequestHandler = async ({ request }) => {
         });
     }
 
-    const userSubmission = await Database.getSubmissionByUserId(userId);
-    if (userSubmission) {
+    const submission = await Database.getSubmissionById(id);
+    console.log("Submission:", submission);
+    if (submission && submission.userid === userId) {
         // cannot vote for your own submission
         console.error("User cannot vote for their own submission");
         return new Response(JSON.stringify({ error: "User cannot vote for their own submission" }), {

@@ -65,6 +65,7 @@ export class Database {
                 s.id,
                 s.name,
                 s.imageurl,
+                s.userid,
                 COUNT(v.id) as voteCount
             FROM submission s
             LEFT JOIN vote v ON v.submissionid = s.id
