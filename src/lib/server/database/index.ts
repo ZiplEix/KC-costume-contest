@@ -9,7 +9,7 @@ export class Database {
         if (!this.db) {
             try {
                 this.db = new sqlite3.Database(this.dbPath);
-                console.log('Logger initialized');
+                console.log('Database initialized');
             } catch (error: any) {
                 console.error('Failed to initialize Logger:', error);
                 throw error;

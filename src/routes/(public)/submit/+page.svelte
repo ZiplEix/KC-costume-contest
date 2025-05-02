@@ -70,8 +70,6 @@
                 }
             });
 
-            localStorage.removeItem("submissionId");
-
             // votesStore.update((currentVotes) => {
             //     const newVotes = [...currentVotes];
             //     const index = newVotes.indexOf(id);
@@ -209,7 +207,7 @@
                                 photo = await compressImage(original, 1080, 0.8);
                             } catch (error) {
                                 console.error("Error compressing image:", error);
-                                alert("There was an error compressing your image. Please try again.");
+                                alert(`There was an error compressing your image. Please try again.\n${error}`);
                             }
                         } else {
                             photo = null;
