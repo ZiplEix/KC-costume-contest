@@ -1,7 +1,7 @@
 <script lang="ts">
     import { mySubmissionsStore } from "$lib/stores/my_submission";
-    import Candidate from "$lib/ui/Candidate.svelte";
-    import DeleteSubmissionModal from "$lib/ui/DeleteSubmissionModal.svelte";
+    import Candidate from "$lib/ui/public/Candidate.svelte";
+    import DeleteSubmissionModal from "$lib/ui/public/DeleteSubmissionModal.svelte";
     import axios from "axios";
     import { onMount } from "svelte";
     import { hasSentDeviceId, getOrCreateDeviceId, markDeviceIdAsSent } from "$lib/utils/auth";

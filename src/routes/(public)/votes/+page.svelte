@@ -1,7 +1,7 @@
 <script lang='ts'>
     import { submissionsStore, type Submission } from "$lib/stores/submissions";
     import { votesStore } from "$lib/stores/votes";
-    import Candidate from "$lib/ui/Candidate.svelte";
+    import Candidate from "$lib/ui/public/Candidate.svelte";
     import { vote } from "$lib/utils/vote";
     import { onMount } from "svelte";
 

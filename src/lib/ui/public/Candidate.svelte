@@ -2,12 +2,12 @@
     import { votesStore } from "$lib/stores/votes";
     import { derived } from "svelte/store";
 
-    export let id: number; // will be used later
+    export let id: number;
     export let name: string;
     export let photo: string;
     export let voteCount: number;
 
-    export let vote: (id: string) => void;
+    export let vote: (id: string) => void = () => {};
 
     const color = derived(votesStore, ($votes) => {
         return $votes[0] == String(id) || $votes[1] == String(id) ? "#f44336" : "currentColor";
@@ -15,7 +15,7 @@
 </script>
 
 <div class="card bg-base-300 shadow-sm p-4">
-    <img src="api/image/{photo}" alt="canditate costume" class="rounded-lg" />
+    <img src="/api/image/{photo}" alt="canditate costume" class="rounded-lg" />
     <div class="card-body pt-4 pr-4 pl-4 pb-2 flex justify-between flex-row">
         <h2 class="card-title">{name}</h2>
         <button on:click={() => vote(String(id))} class="flex items-center gap-2 p-2 rounded-lg bg-base-200 hover:bg-base-300">

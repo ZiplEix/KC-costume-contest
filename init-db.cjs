@@ -11,39 +11,67 @@ const db = new sqlite3.Database(dbPath, (err) => {
     }
 });
 
+db.run("PRAGMA foreign_keys = ON;");
+
+// const createSubmissionTableQuery = `
+//   CREATE TABLE IF NOT EXISTS submission (
+//     id INTEGER PRIMARY KEY AUTOINCREMENT,
+//     userid TEXT NOT NULL UNIQUE,
+//     name TEXT NOT NULL,
+//     imageurl TEXT NOT NULL
+//   );
+// `;
+
 const createSubmissionTableQuery = `
   CREATE TABLE IF NOT EXISTS submission (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    userid TEXT NOT NULL UNIQUE,
     name TEXT NOT NULL,
     imageurl TEXT NOT NULL
   );
-`
+`;
 
 const createVoteTableQuery = `
   CREATE TABLE IF NOT EXISTS vote (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     submissionid INTEGER NOT NULL,
     userid TEXT NOT NULL,
-    FOREIGN KEY (submissionid) REFERENCES submission(id)
+    FOREIGN KEY (submissionid) REFERENCES submission(id) ON DELETE CASCADE
   );
-`
+`;
 
-db.run(createSubmissionTableQuery, function (err) {
-    if (err) {
-        console.error('Error creating table: ' + err.message);
-    } else {
-        console.log('Table created or already exists.');
-    }
+db.serialize(() => {
+    db.run(createSubmissionTableQuery, function (err) {
+        if (err) {
+            console.error('Error creating submission table: ' + err.message);
+        } else {
+            console.log('Submission table created or already exists.');
+        }
+    });
+
+    db.run(createVoteTableQuery, function (err) {
+        if (err) {
+            console.error('Error creating vote table: ' + err.message);
+        } else {
+            console.log('Vote table created or already exists.');
+        }
+    });
 });
 
-db.run(createVoteTableQuery, function (err) {
-    if (err) {
-        console.error('Error creating table: ' + err.message);
-    } else {
-        console.log('Table created or already exists.');
-    }
-});
+// db.run(createSubmissionTableQuery, function (err) {
+//     if (err) {
+//         console.error('Error creating table: ' + err.message);
+//     } else {
+//         console.log('Table created or already exists.');
+//     }
+// });
+
+// db.run(createVoteTableQuery, function (err) {
+//     if (err) {
+//         console.error('Error creating table: ' + err.message);
+//     } else {
+//         console.log('Table created or already exists.');
+//     }
+// });
 
 db.close((err) => {
     if (err) {

@@ -61,7 +61,7 @@ export const DELETE: RequestHandler = async ({ params }) => {
         console.error(`File not found: ${filePath}`);
     }
 
-    await Database.deleteSubmission(id);
+    await Database.deleteSubmissionById(id);
 
     return new Response(JSON.stringify({ message: 'Submission deleted successfully' }), {
         status: 200,

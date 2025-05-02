@@ -30,6 +30,7 @@
 		"better-sqlite3": "^11.9.1",
 		"daisyui": "^5.0.19",
 		"iconify-icon": "^2.3.0",
+		"jsonwebtoken": "^9.0.2",
 		"mime": "^4.0.7",
 		"sqlite3": "^5.1.7"
 	}

@@ -9,12 +9,11 @@ export const POST: RequestHandler = async ({ request }) => {
 
     const name = formData.get('name');
     const photo = formData.get('photo') as File;
-    const consent = formData.get('consent');
     const deviceId = formData.get('deviceId');
 
-    console.log('Received data:', { name, photo, consent });
+    console.log('Received data:', { name, photo });
 
-    if (!name || !photo || consent !== 'true' || !deviceId) {
+    if (!name || !photo || !deviceId) {
         return new Response(JSON.stringify({ error: 'Missing or invalid fields' }), {
             status: 400,
             headers: { 'Content-Type': 'application/json' }
@@ -35,7 +34,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     fs.writeFileSync(filePath, buffer);
 
-    const id = await Database.registerSubmission(name.toString(), fileName, deviceId.toString());
+    const id = await Database.registerSubmission(name.toString(), fileName);
 
     return new Response(JSON.stringify({ message: 'Submission received!', url: fileName, id }), {
         status: 200,

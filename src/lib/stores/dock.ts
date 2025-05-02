@@ -1,15 +1,25 @@
 import { writable } from "svelte/store";
 
-export type DockName = "home" | "submit" | "rules" | "votes";
+export type PublicDockName = "home" | "rules" | "votes";
+export type ManagmentDockName = "dashboard" | "submit";
 
-function getInitialDock(): DockName {
+function getInitialPublicDock(): PublicDockName {
     if (typeof window !== 'undefined') {
 		const path = window.location.pathname;
-		if (path.startsWith('/submit')) return 'submit';
 		if (path.startsWith('/rules')) return 'rules';
 		if (path.startsWith('/votes')) return 'votes';
 	}
 	return 'home';
 }
 
-export const dockStore = writable<DockName>(getInitialDock());
+function getInitialManagmentDock(): ManagmentDockName {
+	if (typeof window !== 'undefined') {
+		const path = window.location.pathname;
+		if (path.startsWith('/dashboard')) return 'dashboard';
+		if (path.startsWith('/submit')) return 'submit';
+	}
+	return 'dashboard';
+}
+
+export const publicDockStore = writable<PublicDockName>(getInitialPublicDock());
+export const managmentDockStore = writable<ManagmentDockName>(getInitialManagmentDock());

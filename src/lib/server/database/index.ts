@@ -47,11 +47,11 @@ export class Database {
         }
     }
 
-    public static async registerSubmission(name: string, imageUrl: string, userid: string): Promise<number> {
-        const query = `INSERT INTO submission (name, imageurl, userid) VALUES (?, ?, ?)`;
+    public static async registerSubmission(name: string, imageUrl: string): Promise<number> {
+        const query = `INSERT INTO submission (name, imageurl) VALUES (?, ?)`;
 
         try {
-            const insertedId = await this.run(query, [name, imageUrl, userid]);
+            const insertedId = await this.run(query, [name, imageUrl]);
             return insertedId;
         } catch (error) {
             console.error("Error registering submission:", error);
@@ -65,7 +65,6 @@ export class Database {
                 s.id,
                 s.name,
                 s.imageurl,
-                s.userid,
                 COUNT(v.id) as voteCount
             FROM submission s
             LEFT JOIN vote v ON v.submissionid = s.id

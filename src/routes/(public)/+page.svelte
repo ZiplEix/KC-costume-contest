@@ -1,6 +1,6 @@
 <script lang='ts'>
     import { submissionsStore } from "$lib/stores/submissions";
-    import Candidate from "$lib/ui/Candidate.svelte";
+    import Candidate from "$lib/ui/public/Candidate.svelte";
     import { vote } from "$lib/utils/vote";
     import axios from "axios";
     import { onMount } from "svelte";
@@ -15,10 +15,6 @@
         }
     });
 </script>
-
-<svelte:head>
-    <title>Korea Club Costume Contest</title>
-</svelte:head>
 
 <main class="p-4 mb-16">
     {#if $submissionsStore.length === 0}
