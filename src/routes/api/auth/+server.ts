@@ -1,6 +1,23 @@
 import type { RequestHandler } from "./$types";
 import jwt from 'jsonwebtoken';
+import { parse } from 'cookie';
 import { SECRET_MANAGMENT_PASSWORD, SECRET_JWT_SECRET } from '$env/static/private';
+import { verifyToken } from "$lib/utils/verify_token";
+
+export const GET: RequestHandler = async ({ request }) => {
+    const cookies = parse(request.headers.get('cookie') || '');
+    const token = cookies.token;
+
+    const resTok = verifyToken(token, SECRET_JWT_SECRET);
+    if (resTok instanceof Response) {
+        return resTok;
+    }
+
+    return new Response(JSON.stringify({ success: true }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+    });
+}
 
 export const POST: RequestHandler = async ({ request }) => {
     const body = await request.json();

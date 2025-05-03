@@ -35,7 +35,8 @@
             <form class="flex flex-col items-center space-y-4">
                 <input
                     type="password"
-                    placeholder="Mot de passe"
+                    placeholder="Password"
+                    autocomplete="current-password"
                     class="input input-bordered input-primary w-full max-w-xs"
                     id="password"
                     name="password"

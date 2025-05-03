@@ -1,3 +1,0 @@
- - protect managment route
- - lock submit managment button
- - display vote count on managment card

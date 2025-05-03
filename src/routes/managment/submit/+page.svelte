@@ -1,19 +1,20 @@
 <script lang="ts">
     import { mySubmissionsStore } from "$lib/stores/my_submission";
-    import Candidate from "$lib/ui/public/Candidate.svelte";
-    import DeleteSubmissionModal from "$lib/ui/public/DeleteSubmissionModal.svelte";
     import axios from "axios";
-    import { onMount } from "svelte";
-    import { hasSentDeviceId, getOrCreateDeviceId, markDeviceIdAsSent } from "$lib/utils/auth";
+    import { getOrCreateDeviceId, markDeviceIdAsSent } from "$lib/utils/auth";
+    import { writable } from "svelte/store";
 
     let name = '';
     let photo: File | null = null;
+    let loader = writable<boolean>(false);
 
     const handleSubmit = async (event: Event) => {
         event.preventDefault();
 
+        loader.set(true);
+
         if (!name || !photo) {
-            alert("Please fill out all fields and give your consent.");
+            alert("Please fill out all fields.");
             return;
         }
 
@@ -40,9 +41,18 @@
             });
 
             markDeviceIdAsSent();
+
+            alert("Costume submitted successfully!");
+
+            // Reset form
+            name = '';
+            photo = null;
+            (document.querySelector("input[type='file']") as HTMLInputElement).value = '';
         } catch (error) {
             console.error("Error submitting form:", error);
-            alert("There was an error submitting your form. Please try again.");
+            alert("There was an error submitting the form. Please try again.");
+        } finally {
+            loader.set(false);
         }
     };
 
@@ -104,12 +114,8 @@
 
             reader.onerror = reject;
             reader.readAsDataURL(file);
-        }
-    );
-}
-
-
-
+        });
+    }
 </script>
 
 <main class="p-4">
@@ -155,6 +161,16 @@
         </fieldset>
 
         <!-- Submit -->
-        <button type="submit" class="btn btn-primary mt-4">Submit</button>
+        <button
+            type="submit"
+            class="btn btn-primary mt-4"
+            disabled={$loader}
+        >
+            {#if $loader}
+                <span class="loading loading-spinner loading-sm"></span>
+            {:else}
+                Submit
+            {/if}
+        </button>
     </form>
 </main>

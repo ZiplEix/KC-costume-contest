@@ -105,12 +105,14 @@ export class Database {
     }
 
     public static async deleteSubmissionById(id: string): Promise<void> {
-        const query = `DELETE FROM submission WHERE id = ?`;
+        const deleteVotesQuery = `DELETE FROM vote WHERE submissionid = ?`
+        const deleteSubmissionQuery = `DELETE FROM submission WHERE id = ?`;
 
         try {
-            await this.run(query, [id]);
+            await this.run(deleteSubmissionQuery, [id]);
+            await this.run(deleteVotesQuery, [id]);
         } catch (error) {
-            console.error("Error deleting submission:", error);
+            console.error("Error deleting submission and votes:", error);
             throw error;
         }
     }
@@ -161,11 +163,6 @@ export class Database {
                 throw new Error("User has already voted for this submission.");
             }
 
-            // Ajoute le vote
-            // await this.db.run(
-            //     `INSERT INTO vote (submissionid, userid) VALUES (?, ?)`,
-            //     [submissionId, userId]
-            // );
             await this.run(
                 `INSERT INTO vote (submissionid, userid) VALUES (?, ?)`,
                 [submissionId, userId]
