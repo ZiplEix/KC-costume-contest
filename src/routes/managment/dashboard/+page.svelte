@@ -14,7 +14,7 @@
 
             submissionsStore.set(response.data);
 
-            console.log("Submissions:", response.data);
+            // console.log("Submissions:", response.data);
         } catch (error) {
             console.error("Error fetching submissions:", error);
         }
