@@ -1,7 +1,14 @@
 const sqlite3 = require('sqlite3').verbose();
 const { join } = require('path');
+const fs = require('fs');
 
-const dbPath = join(__dirname, 'database.sqlite');
+// const dbDir = join(__dirname, 'db');
+const dbDir = join('/', 'data');
+if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir);
+}
+
+const dbPath = join(dbDir, 'database.sqlite');
 
 const db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
@@ -12,15 +19,6 @@ const db = new sqlite3.Database(dbPath, (err) => {
 });
 
 db.run("PRAGMA foreign_keys = ON;");
-
-// const createSubmissionTableQuery = `
-//   CREATE TABLE IF NOT EXISTS submission (
-//     id INTEGER PRIMARY KEY AUTOINCREMENT,
-//     userid TEXT NOT NULL UNIQUE,
-//     name TEXT NOT NULL,
-//     imageurl TEXT NOT NULL
-//   );
-// `;
 
 const createSubmissionTableQuery = `
   CREATE TABLE IF NOT EXISTS submission (
@@ -58,22 +56,6 @@ db.serialize(() => {
         }
     });
 });
-
-// db.run(createSubmissionTableQuery, function (err) {
-//     if (err) {
-//         console.error('Error creating table: ' + err.message);
-//     } else {
-//         console.log('Table created or already exists.');
-//     }
-// });
-
-// db.run(createVoteTableQuery, function (err) {
-//     if (err) {
-//         console.error('Error creating table: ' + err.message);
-//     } else {
-//         console.log('Table created or already exists.');
-//     }
-// });
 
 db.close((err) => {
     if (err) {

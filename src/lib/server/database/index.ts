@@ -1,7 +1,7 @@
 import sqlite3 from "sqlite3";
 
 export class Database {
-    private static dbPath = "database.sqlite";
+    private static dbPath = "db/database.sqlite";
     private static db: sqlite3.Database;
 
     public static async init(): Promise<void> {
