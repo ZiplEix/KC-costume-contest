@@ -1,7 +1,9 @@
 import sqlite3 from "sqlite3";
 
+import { SECRET_DB_PATH } from '$env/static/private';
+
 export class Database {
-    private static dbPath = "db/database.sqlite";
+    private static dbPath = SECRET_DB_PATH;
     private static db: sqlite3.Database;
 
     public static async init(): Promise<void> {
@@ -11,7 +13,7 @@ export class Database {
                 this.db = new sqlite3.Database(this.dbPath);
                 console.log('Database initialized');
             } catch (error: any) {
-                console.error('Failed to initialize Logger:', error);
+                console.error('Failed to initialize Database:', error);
                 throw error;
             }
         }
