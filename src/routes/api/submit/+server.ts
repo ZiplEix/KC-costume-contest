@@ -4,6 +4,8 @@ import path from 'path';
 import type { RequestHandler } from './$types';
 import { Database } from '$lib/server/database';
 
+import { SECRET_UPLOAD_PATH } from '$env/static/private';
+
 export const POST: RequestHandler = async ({ request }) => {
     const formData = await request.formData();
 
@@ -20,7 +22,7 @@ export const POST: RequestHandler = async ({ request }) => {
         });
     }
 
-    const uploadDir = path.join('uploads');
+    const uploadDir = path.join(SECRET_UPLOAD_PATH);
 	if (!fs.existsSync(uploadDir)) {
 		fs.mkdirSync(uploadDir, { recursive: true });
 	}
