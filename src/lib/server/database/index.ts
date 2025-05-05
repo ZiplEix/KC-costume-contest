@@ -7,7 +7,6 @@ export class Database {
     private static db: sqlite3.Database;
 
     public static async init(): Promise<void> {
-
         if (!this.db) {
             try {
                 this.db = new sqlite3.Database(this.dbPath);
@@ -20,6 +19,8 @@ export class Database {
     }
 
     public static async query(query: string, params: any[] = []): Promise<any[]> {
+        this.init();
+
         return new Promise((resolve, reject) => {
             this.db.all(query, params, (err, rows) => {
                 if (err) {
@@ -32,6 +33,8 @@ export class Database {
     }
 
     public static async run(query: string, params: any[] = []): Promise<number> {
+        this.init();
+
         return new Promise((resolve, reject) => {
             this.db.run(query, params, function (err) {
                 if (err) {
@@ -208,7 +211,7 @@ export class Database {
 
 }
 
-Database.init()
+// Database.init()
 
 process.on("SIGINT", async () => {
     console.log('Closing Database connection');
