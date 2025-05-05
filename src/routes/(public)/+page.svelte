@@ -29,7 +29,6 @@
                     id={sub.id}
                     name={sub.name}
                     photo={sub.imageUrl}
-                    voteCount={sub.voteCount}
                     vote={vote}
                 />
             {/each}

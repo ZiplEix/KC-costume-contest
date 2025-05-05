@@ -1,7 +1,7 @@
 import { writable } from "svelte/store";
 
 export type PublicDockName = "home" | "rules" | "votes";
-export type ManagmentDockName = "dashboard" | "submit";
+export type ManagmentDockName = "dashboard" | "submit" | "results";
 
 function getInitialPublicDock(): PublicDockName {
     if (typeof window !== 'undefined') {

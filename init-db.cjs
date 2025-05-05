@@ -26,7 +26,8 @@ const createSubmissionTableQuery = `
   CREATE TABLE IF NOT EXISTS submission (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    imageurl TEXT NOT NULL
+    imageurl TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   );
 `;
 
@@ -35,6 +36,7 @@ const createVoteTableQuery = `
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     submissionid INTEGER NOT NULL,
     userid TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (submissionid) REFERENCES submission(id) ON DELETE CASCADE
   );
 `;

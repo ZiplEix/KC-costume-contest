@@ -1,5 +1,3 @@
-import fs from 'fs';
-
 import { Database } from "$lib/server/database";
 import type { RequestHandler } from "./$types";
 
@@ -11,6 +9,7 @@ export const GET: RequestHandler = async () => {
         name: submission.name,
         imageUrl: submission.imageurl,
         voteCount: submission.voteCount,
+        createdAt: submission.created_at,
     }));
 
     return new Response(JSON.stringify(response), {

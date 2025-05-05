@@ -65,6 +65,7 @@ export class Database {
                 s.id,
                 s.name,
                 s.imageurl,
+                s.created_at,
                 COUNT(v.id) as voteCount
             FROM submission s
             LEFT JOIN vote v ON v.submissionid = s.id
@@ -139,25 +140,53 @@ export class Database {
         }
     }
 
+    // public static async registerVote(submissionId: number, type: "vote" | "unvote", userId: string): Promise<void> {
+    //     if (type === "vote") {
+    //         // Vérifie le nombre de votes existants pour cet utilisateur
+    //         const existingVotes = await this.query(
+    //             `SELECT COUNT(*) as count FROM vote WHERE userid = ?`,
+    //             [userId]
+    //         );
+    //         console.log("Existing votes:", existingVotes);
+
+    //         if (existingVotes[0].count >= 2) {
+    //             throw new Error("User has already voted for 2 submissions.");
+    //         }
+
+    //         // Vérifie s’il n’a pas déjà voté pour cette submission
+    //         const alreadyVoted = await this.query(
+    //             `SELECT 1 FROM vote WHERE userid = ? AND submissionid = ?`,
+    //             [userId, submissionId]
+    //         );
+    //         console.log("Already voted:", alreadyVoted);
+
+    //         if (alreadyVoted.length > 0) {
+    //             throw new Error("User has already voted for this submission.");
+    //         }
+
+    //         await this.run(
+    //             `INSERT INTO vote (submissionid, userid) VALUES (?, ?)`,
+    //             [submissionId, userId]
+    //         ).catch((error) => {
+    //             console.error("Error inserting vote:", error);
+    //             throw error;
+    //         });
+
+    //     } else if (type === "unvote") {
+    //         // Supprime le vote
+    //         await this.db.run(
+    //             `DELETE FROM vote WHERE submissionid = ? AND userid = ?`,
+    //             [submissionId, userId]
+    //         );
+    //     }
+    // }
+
     public static async registerVote(submissionId: number, type: "vote" | "unvote", userId: string): Promise<void> {
         if (type === "vote") {
-            // Vérifie le nombre de votes existants pour cet utilisateur
-            const existingVotes = await this.query(
-                `SELECT COUNT(*) as count FROM vote WHERE userid = ?`,
-                [userId]
-            );
-            console.log("Existing votes:", existingVotes);
-
-            if (existingVotes[0].count >= 2) {
-                throw new Error("User has already voted for 2 submissions.");
-            }
-
-            // Vérifie s’il n’a pas déjà voté pour cette submission
             const alreadyVoted = await this.query(
                 `SELECT 1 FROM vote WHERE userid = ? AND submissionid = ?`,
                 [userId, submissionId]
             );
-            console.log("Already voted:", alreadyVoted);
 
             if (alreadyVoted.length > 0) {
                 throw new Error("User has already voted for this submission.");
@@ -166,14 +195,9 @@ export class Database {
             await this.run(
                 `INSERT INTO vote (submissionid, userid) VALUES (?, ?)`,
                 [submissionId, userId]
-            ).catch((error) => {
-                console.error("Error inserting vote:", error);
-                throw error;
-            });
-
+            );
         } else if (type === "unvote") {
-            // Supprime le vote
-            await this.db.run(
+            await this.run(
                 `DELETE FROM vote WHERE submissionid = ? AND userid = ?`,
                 [submissionId, userId]
             );
