@@ -15,6 +15,7 @@
 
         if (!name || !photo) {
             alert("Please fill out all fields.");
+            loader.set(false);
             return;
         }
 
