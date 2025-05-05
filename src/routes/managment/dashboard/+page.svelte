@@ -13,6 +13,8 @@
             const response = await axios.get("/api/submissions");
 
             submissionsStore.set(response.data);
+
+            console.log("Submissions:", response.data);
         } catch (error) {
             console.error("Error fetching submissions:", error);
         }
