@@ -2,8 +2,7 @@ const sqlite3 = require('sqlite3').verbose();
 const { join } = require('path');
 const fs = require('fs');
 
-// const dbDir = join(__dirname, 'db');
-const dbDir = join('/', 'data');
+const dbDir = join(__dirname, 'db');
 if (!fs.existsSync(dbDir)) {
     fs.mkdirSync(dbDir);
 }
