@@ -4,55 +4,30 @@
     import Candidate from "$lib/ui/public/Candidate.svelte";
     import { vote } from "$lib/utils/vote";
     import { onMount } from "svelte";
+  import { derived } from "svelte/store";
 
-    let vote1: Submission | null = null;
-    let vote2: Submission | null = null;
-
-    onMount(() => {
-        try {
-            const vote1Id = $votesStore[0];
-            const vote2Id = $votesStore[1];
-
-            if (vote1Id !== "0") {
-                vote1 = $submissionsStore.find((submission) => submission.id === Number(vote1Id)) || null;
-            }
-
-            if (vote2Id !== "0") {
-                vote2 = $submissionsStore.find((submission) => submission.id === Number(vote2Id)) || null;
-            }
-        } catch (error) {
-            console.error("Error fetching votes:", error);
-        }
-    });
+    const votedSubmissions = derived(
+        [votesStore, submissionsStore],
+        ([$votes, $submissions]) =>
+            $votes
+                .map((id) => $submissions.find((s) => s.id === Number(id)))
+                .filter((s): s is Submission => s !== undefined)
+    );
 </script>
 
 <main class="p-4 flex flex-col gap-y-4 mb-16">
-    {#if $votesStore[0] === "0" && $votesStore[1] === "0"}
+    {#if $votedSubmissions.length === 0}
         <h2 class="text-2xl">You have not voted yet.</h2>
     {:else}
         <h2 class="text-2xl">Your votes</h2>
 
-        {#if vote1}
+        {#each $votedSubmissions as sub}
             <Candidate
-                id={vote1.id}
-                name={vote1.name}
-                photo={vote1.imageUrl}
-                voteCount={vote1.voteCount}
+                id={sub.id}
+                name={sub.name}
+                photo={sub.imageUrl}
                 vote={vote}
             />
-        {/if}
-
-        {#if vote2}
-            <Candidate
-                id={vote2.id}
-                name={vote2.name}
-                photo={vote2.imageUrl}
-                voteCount={vote2.voteCount}
-                vote={vote}
-            />
-        {/if}
+        {/each}
     {/if}
-
-
-
 </main>
