@@ -9,7 +9,8 @@
     export let vote: (id: string) => void = () => {};
 
     const color = derived(votesStore, ($votes) => {
-        return $votes[0] == String(id) || $votes[1] == String(id) ? "#f44336" : "currentColor";
+        // return $votes[0] == String(id) || $votes[1] == String(id) ? "#f44336" : "currentColor";
+        return $votes.includes(String(id)) ? "#f44336" : "currentColor";
     });
 </script>
 
